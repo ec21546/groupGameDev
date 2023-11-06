@@ -14,14 +14,13 @@ public class EnemyMovement : MonoBehaviour
 
     private Transform player;
 
+    public float damageAmount = 0.5f;
     void Start()
     {
         initialPosition = spawnPoint.position;
         targetPosition = GetRandomTargetPosition();
 
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        //isAggressive = Random.Range(0, 2) == 0; If we want random aggressiveness 
 
         isMoving = true;
     }
@@ -37,7 +36,21 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
-            ChasePlayer();
+            if (IsPlayerNearby())
+            {
+                // Assuming "player" is a reference to the player GameObject and "damageAmount" is set correctly.
+                // "player" should have the "PlayerCombat" script attached.
+                PlayerCombat playerCombat = player.GetComponent<PlayerCombat>();
+                if (playerCombat != null)
+                {
+                    Debug.Log("take damage");
+                    playerCombat.TakeDamage(damageAmount); // Call the TakeDamage function to inflict damage.
+                }
+            }
+            else
+            {
+                ChasePlayer();
+            }
         }
     }
 
@@ -78,7 +91,7 @@ public class EnemyMovement : MonoBehaviour
     Vector3 GetRandomTargetPosition()
     {
         Vector2 randomPoint = Random.insideUnitCircle * maxDistanceFromSpawn;
-        Vector3 targetPosition = initialPosition + new Vector3(randomPoint.x, 0, randomPoint.y);
+        Vector3 targetPosition = initialPosition + new Vector3(randomPoint.x, 0.5f, randomPoint.y);
         targetPosition.y = transform.position.y;
         return targetPosition;
     }
